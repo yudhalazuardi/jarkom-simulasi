@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jaringan Komputer & Simulasi Alur Jaringan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(51, 65, 85, 0.8);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        .dark ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-full flex flex-col transition-colors duration-300">
+
+    <!-- Header Navbar -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-network-wired text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+                        Jaringan Komputer
+                    </h1>
+                    <p class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
+                        Dosen pengampu : <span class="text-indigo-600 dark:text-indigo-400 font-semibold">Lazuardi yudha Pradana,S.Kom.,M.Kom</span>
+                    </p>
+                </div>
+            </div>
+            <!-- Theme toggle & Mobile menu button -->
+            <div class="flex items-center space-x-2">
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition" aria-label="Toggle Theme">
+                    <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Navigation Tabs -->
+        <div class="bg-slate-100 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-2 sm:space-x-4 overflow-x-auto py-2">
+                <button onclick="switchTab('simulation')" id="btn-tab-simulation" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2 whitespace-nowrap bg-indigo-600 text-white shadow-md shadow-indigo-500/20">
+                    <i class="fa-solid fa-route"></i>
+                    <span>Simulasi Alur Website</span>
+                </button>
+                <button onclick="switchTab('ipaddress')" id="btn-tab-ipaddress" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2 whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800">
+                    <i class="fa-solid fa-address-card"></i>
+                    <span>Materi IP Address</span>
+                </button>
+                <button onclick="switchTab('topology')" id="btn-tab-topology" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2 whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800">
+                    <i class="fa-solid fa-sitemap"></i>
+                    <span>Topologi Jaringan</span>
+                </button>
+                <button onclick="switchTab('ipsim')" id="btn-tab-ipsim" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2 whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800">
+                    <i class="fa-solid fa-computer"></i>
+                    <span>Lab Simulasi IP</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ================= SECTION 1: SIMULASI ALUR REQUEST & RESPONSE ================= -->
+        <section id="tab-simulation" class="space-y-6">
+            <div class="bg-gradient-to-r from-indigo-900 to-violet-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <h2 class="text-2xl sm:text-3xl font-bold mb-2">Simulasi Alur Request & Response Website</h2>
+                <p class="text-indigo-200 text-sm sm:text-base max-w-3xl">
+                    Visualisasi interaktif bagaimana sebuah URL diketik di browser hingga menampilkan website utuh melalui DNS, IP Address, Network, HTTPS, dan Server.
+                </p>
+            </div>
+
+            <!-- Interactive Canvas & Control Panel -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Canvas Area (2 cols) -->
+                <div class="lg:col-span-2 glass-card rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+                        <h3 class="font-bold text-lg flex items-center space-x-2">
+                            <i class="fa-solid fa-display text-indigo-600"></i>
+                            <span>Kanvas Simulasi Alur Jaringan</span>
+                        </h3>
+                        <div class="flex items-center space-x-2 w-full sm:w-auto">
+                            <input type="text" id="sim-url-input" value="youtube.com" class="px-3 py-1.5 text-sm bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-grow sm:flex-grow-0" placeholder="Masukkan URL...">
+                            <button onclick="startSimulation()" id="play-sim-btn" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow transition flex items-center space-x-1.5 whitespace-nowrap">
+                                <i class="fa-solid fa-play"></i><span>Mulai Alur</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Wrapper -->
+                    <div class="relative w-full aspect-[4/3] sm:aspect-[16/10] bg-slate-900 rounded-xl overflow-hidden shadow-inner border border-slate-800 flex items-center justify-center">
+                        <canvas id="simulationCanvas" class="w-full h-full cursor-pointer"></canvas>
+                        <div id="canvas-overlay-msg" class="absolute bottom-4 left-4 right-4 bg-slate-950/80 backdrop-blur border border-slate-800 text-slate-200 p-3 rounded-xl text-xs sm:text-sm font-medium shadow-lg flex items-center justify-between">
+                            <span id="step-desc">Klik tombol "Mulai Alur" atau klik salah satu tahap di bawah untuk melihat animasi perjalanan paket data.</span>
+                            <span id="step-badge" class="px-2 py-1 bg-indigo-600/30 text-indigo-300 rounded font-bold text-xs uppercase tracking-wider">Ready</span>
+                        </div>
+                    </div>
+
+                    <!-- Playback Controls -->
+                    <div class="flex items-center justify-between mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 text-xs sm:text-sm">
+                        <div class="flex space-x-2">
+                            <button onclick="stepSimulation(-1)" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 rounded-lg font-medium transition flex items-center space-x-1">
+                                <i class="fa-solid fa-backward-step"></i><span>Sebelumnya</span>
+                            </button>
+                            <button onclick="stepSimulation(1)" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 rounded-lg font-medium transition flex items-center space-x-1">
+                                <span>Selanjutnya</span><i class="fa-solid fa-forward-step"></i>
+                            </button>
+                        </div>
+                        <button onclick="resetSimulation()" class="px-3 py-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg font-medium transition">
+                            <i class="fa-solid fa-rotate-right mr-1"></i>Reset Simulasi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Explanation / Stages Panel (1 col) -->
+                <div class="glass-card rounded-2xl p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg mb-3 flex items-center space-x-2 text-indigo-600 dark:text-indigo-400">
+                            <i class="fa-solid fa-list-check"></i>
+                            <span>Alur U (Request & Response)</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                            Klik tahap di bawah untuk mendalami proses jaringan secara detail:
+                        </p>
+                        <!-- Stages List -->
+                        <div id="stages-list" class="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 text-center">
+                        Berdasarkan ilustrasi standar Request/Response Website.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 2: MATERI IP ADDRESS ================= -->
+        <section id="tab-ipaddress" class="space-y-6 hidden">
+            <div class="bg-gradient-to-r from-violet-900 to-indigo-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+                <h2 class="text-2xl sm:text-3xl font-bold mb-2">Materi Lengkap IP Address</h2>
+                <p class="text-indigo-200 text-sm sm:text-base max-w-3xl">
+                    Panduan mendalam mengenai Internet Protocol Address (IPv4 & IPv6), Struktur Network & Host ID, Kelas IP, Subnet Mask, hingga analogi Gen-Z.
+                </p>
+            </div>
+
+            <!-- Sub Navigation for IP Subtopics -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <button onclick="switchIpTab('def')" id="iptab-btn-def" class="ip-tab-btn p-3 rounded-xl border border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold text-sm text-left transition flex items-center space-x-2">
+                    <i class="fa-solid fa-book-open"></i><span>1. Pengertian & Struktur</span>
+                </button>
+                <button onclick="switchIpTab('class')" id="iptab-btn-class" class="ip-tab-btn p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold text-sm text-left transition flex items-center space-x-2">
+                    <i class="fa-solid fa-layer-group"></i><span>2. Kelas & Subnet Mask</span>
+                </button>
+                <button onclick="switchIpTab('pubpriv')" id="iptab-btn-pubpriv" class="ip-tab-btn p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold text-sm text-left transition flex items-center space-x-2">
+                    <i class="fa-solid fa-globe"></i><span>3. Public vs Private</span>
+                </button>
+                <button onclick="switchIpTab('dynstat')" id="iptab-btn-dynstat" class="ip-tab-btn p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold text-sm text-left transition flex items-center space-x-2">
+                    <i class="fa-solid fa-arrows-rotate"></i><span>4. Dynamic vs Static</span>
+                </button>
+            </div>
+
+            <!-- IP Tab Content Container -->
+            <div class="glass-card rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+                <!-- IP Tab 1: Pengertian & Struktur -->
+                <div id="iptab-def" class="ip-content space-y-6">
+                    <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+                        <h3 class="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">Pengertian IP Address & Analogi Pos</h3>
+                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                            <strong>IP Address (Internet Protocol Address)</strong> adalah alamat unik yang digunakan untuk mengidentifikasi setiap perangkat yang terhubung ke jaringan komputer atau internet, agar dapat saling mengirim dan menerima data.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div class="bg-indigo-50 dark:bg-indigo-950/30 p-5 rounded-xl border border-indigo-100 dark:border-indigo-900 space-y-3">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-300 flex items-center space-x-2">
+                                <i class="fa-solid fa-envelope"></i><span>Analogi Layanan Pos vs Paket Data</span>
+                            </h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                                Seperti surat pos yang memerlukan <strong>Destination Address</strong> (Alamat Tujuan) dan <strong>Return Address</strong> (Alamat Pengirim/Source), paket data di internet juga membungkus <em>Destination IP</em> dan <em>Source IP</em> agar router tahu ke mana data harus dikirim dan bagaimana cara membalasnya.
+                            </p>
+                        </div>
+                        <div class="bg-slate-100 dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+                            <h4 class="font-bold text-slate-700 dark:text-slate-300 flex items-center space-x-2">
+                                <i class="fa-solid fa-puzzle-piece"></i><span>Struktur IP Address</span>
+                            </h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                                Terdiri dari dua bagian utama:
+                            </p>
+                            <ul class="text-sm list-disc list-inside space-y-1 text-slate-600 dark:text-slate-300 font-medium">
+                                <li><strong>Network ID:</strong> Menunjukkan jaringan tempat perangkat berada.</li>
+                               <li><strong>Host ID:</strong> Menunjukkan perangkat spesifik di dalam jaringan tersebut.</li>
+                            </ul>
+                            <div class="p-2.5 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 text-xs font-mono">
+                                Contoh: 192.168.10.1 &rarr; Network ID: 192.168.10 | Host ID: 1
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Versi IP -->
+                    <div class="space-y-4 pt-4">
+                        <h4 class="font-bold text-lg">Versi IP Address (IPv4 vs IPv6)</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-indigo-600 dark:text-indigo-400 text-lg">IPv4</span>
+                                    <span class="px-2.5 py-0.5 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded text-xs font-bold">32 Bit</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Internet Protocol version 4</p>
+                                <p class="text-sm text-slate-600 dark:text-slate-300">Format: 4 kelompok angka desimal (0–255) dipisah titik.</p>
+                                <div class="p-2 bg-slate-100 dark:bg-slate-800 rounded font-mono text-xs">Contoh: 192.168.1.1 (Kapasitas ±4,3 miliar alamat)</div>
+                            </div>
+                            <div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-violet-600 dark:text-violet-400 text-lg">IPv6</span>
+                                    <span class="px-2.5 py-0.5 bg-violet-100 dark:bg-violet-950 text-violet-700 dark:text-violet-300 rounded text-xs font-bold">128 Bit</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Internet Protocol version 6</p>
+                                <p class="text-sm text-slate-600 dark:text-slate-300">Format: 8 kelompok heksadesimal dipisah titik dua.</p>
+                                <div class="p-2 bg-slate-100 dark:bg-slate-800 rounded font-mono text-xs overflow-x-hidden text-ellipsis">Contoh: 2001:0db8::8a2e:0370:7334 (Kapasitas hampir tak terbatas)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Struktur 32-bit IPv4 -->
+                    <div class="p-5 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+                        <h4 class="font-bold">Struktur Biner IPv4 (32-bit)</h4>
+                        <p class="text-sm text-slate-600 dark:text-slate-300">
+                            32 bit dibagi menjadi 4 bagian (oktet), masing-masing terdiri dari 8 bit yang dikonversi ke desimal:
+                        </p>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center font-mono text-xs">
+                            <div class="p-3 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">
+                                <div class="font-bold text-indigo-600 dark:text-indigo-400">10000011</div>
+                                <div class="text-slate-400 mt-1">&rarr; 131 (8 bit)</div>
+                            </div>
+                            <div class="p-3 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">
+                                <div class="font-bold text-indigo-600 dark:text-indigo-400">01101100</div>
+                                <div class="text-slate-400 mt-1">&rarr; 108 (8 bit)</div>
+                            </div>
+                            <div class="p-3 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">
+                                <div class="font-bold text-indigo-600 dark:text-indigo-400">01111010</div>
+                                <div class="text-slate-400 mt-1">&rarr; 122 (8 bit)</div>
+                            </div>
+                            <div class="p-3 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">
+                                <div class="font-bold text-indigo-600 dark:text-indigo-400">11001100</div>
+                                <div class="text-slate-400 mt-1">&rarr; 204 (8 bit)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IP Tab 2: Kelas & Subnet Mask -->
+                <div id="iptab-class" class="ip-content space-y-6 hidden">
+                    <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+                        <h3 class="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">Kelas IP Address (IPv4) & Subnet Mask</h3>
+                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                            IPv4 dibagi ke dalam beberapa kelas (A, B, C, D, E) untuk mengelompokkan skala jaringan, mulai dari jaringan berskala besar (ISP/pemerintahan) hingga jaringan rumah kecil.
+                        </p>
+                    </div>
+
+                    <!-- Classes Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-xs font-bold uppercase tracking-wider text-slate-500">
+                                    <th class="p-3">Kelas</th>
+                                    <th class="p-3">Rentang IP</th>
+                                    <th class="p-3">Network ID</th>
+                                    <th class="p-3">Host ID</th>
+                                    <th class="p-3">Maks. Host</th>
+                                    <th class="p-3">Contoh Penggunaan</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                                <tr>
+                                    <td class="p-3 font-bold text-indigo-600">A</td>
+                                    <td class="p-3 font-mono text-xs">1.0.0.0 – 126.255.255.255</td>
+                                    <td class="p-3">8 bit</td>
+                                    <td class="p-3">24 bit</td>
+                                    <td class="p-3 font-semibold">±16 Juta</td>
+                                    <td class="p-3 text-slate-500">Jaringan besar (ISP, Pemerintahan)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-indigo-600">B</td>
+                                    <td class="p-3 font-mono text-xs">128.0.0.0 – 191.255.255.255</td>
+                                    <td class="p-3">16 bit</td>
+                                    <td class="p-3">16 bit</td>
+                                    <td class="p-3 font-semibold">±65 Ribu</td>
+                                    <td class="p-3 text-slate-500">Kampus, Organisasi Besar</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-indigo-600">C</td>
+                                    <td class="p-3 font-mono text-xs">192.0.0.0 – 223.255.255.255</td>
+                                    <td class="p-3">24 bit</td>
+                                    <td class="p-3">8 bit</td>
+                                    <td class="p-3 font-semibold">±254</td>
+                                    <td class="p-3 text-slate-500">Kantor Kecil, Rumah</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-slate-400">D</td>
+                                    <td class="p-3 font-mono text-xs">224.0.0.0 – 239.255.255.255</td>
+                                    <td class="p-3" colspan="3">Multicast (Tanpa Host ID)</td>
+                                    <td class="p-3 text-slate-500">Streaming, Siaran</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-slate-400">E</td>
+                                    <td class="p-3 font-mono text-xs">240.0.0.0 – 255.255.255.255</td>
+                                    <td class="p-3" colspan="3">Eksperimen / Riset</td>
+                                    <td class="p-3 text-slate-500">Riset & Pengembangan</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Subnet Mask Section -->
+                    <div class="p-5 bg-indigo-50/50 dark:bg-indigo-950/20 rounded-xl border border-indigo-100 dark:border-indigo-900 space-y-3">
+                        <h4 class="font-bold text-indigo-700 dark:text-indigo-300 flex items-center space-x-2">
+                            <i class="fa-solid fa-mask"></i><span>Subnet Mask (Pelengkap Struktur IP)</span>
+                        </h4>
+                        <p class="text-sm text-slate-600 dark:text-slate-300">
+                            Subnet Mask digunakan untuk memisahkan bagian Network ID dan Host ID secara pasti.
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
+                            <div class="p-3 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">
+                                <div>IP Address &nbsp;: <span class="text-indigo-600 font-bold">192.168.1.10</span></div>
+                                <div>Subnet Mask : <span class="text-violet-600 font-bold">255.255.255.0</span></div>
+                            </div>
+                            <div class="p-3 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-sans text-xs flex items-center">
+                                <div><strong>255</strong> = Bagian Network<br><strong>0</strong> = Bagian Perangkat (Host)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IP Tab 3: Public vs Private -->
+                <div id="iptab-pubpriv" class="ip-content space-y-6 hidden">
+                    <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+                        <h3 class="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">IP Address: Public vs Private & Analogi Gen-Z</h3>
+                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Perbedaan mendasar antara alamat yang hanya bisa diakses dalam jaringan lokal (Private) dengan alamat global yang dapat diakses di seluruh internet (Public).
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Private IP -->
+                        <div class="p-6 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center font-bold text-lg">
+                                    <i class="fa-solid fa-house-user"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg">IP Private</h4>
+                                    <span class="text-xs text-slate-500">Si Anak Rumahan / Introvert</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 italic">
+                                "Aku sih nyaman di rumah aja, bro. Dunia luar terlalu ramai." — Kata Private IP sambil rebahan di jaringan LAN.
+                            </p>
+                            <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300">
+                                <li><strong>Fungsi:</strong> Nomor kamar atau nomor rumah di dalam kompleks perumahan lokal (WiFi/LAN).</li>
+                                <li><strong>Rentang Khusus:</strong>
+                                    <div class="mt-1 space-y-1 font-mono text-[11px] bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700">
+                                        <div>• 192.168.0.0 – 192.168.255.255 (Rumahan)</div>
+                                        <div>• 10.0.0.0 – 10.255.255.255 (Perusahaan Besar)</div>
+                                        <div>• 172.16.0.0 – 172.31.255.255 (Perusahaan Menengah)</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Public IP -->
+                        <div class="p-6 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center font-bold text-lg">
+                                    <i class="fa-solid fa-globe"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg">IP Public</h4>
+                                    <span class="text-xs text-slate-500">Si Selebgram Dunia Maya</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 italic">
+                                "Follow aku dong, aku ada di 103.45.78.22. Jangan lupa like dan ping ya~" — Kata Public IP di server global.
+                            </p>
+                            <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300">
+                                <li><strong>Fungsi:</strong> Diberikan oleh ISP (Telkom, Indihome, dll) sebagai identitas unik global di internet.</li>
+                                <li><strong>Karakteristik:</strong> Bisa dilihat semua situs web yang kamu kunjungi, namun rentan terhadap ancaman luar jika tidak diamankan.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IP Tab 4: Dynamic vs Static -->
+                <div id="iptab-dynstat" class="ip-content space-y-6 hidden">
+                    <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+                        <h3 class="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">IP Dynamic vs Static</h3>
+                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Perbedaan metode alokasi alamat IP pada perangkat atau server router Anda.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                            <div class="flex items-center space-x-2 text-indigo-600">
+                                <i class="fa-solid fa-bolt text-lg"></i>
+                                <h4 class="font-bold text-lg">IP Dynamic</h4>
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-slate-300">
+                                Alamat IP yang berubah-ubah secara periodik. Setiap kali router menyala ulang atau setelah waktu tertentu, ISP memberikan IP Public baru.
+                            </p>
+                            <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded text-xs space-y-1">
+                                <div><strong>Keuntungan:</strong> Lebih hemat biaya & aman untuk rumah.</div>
+                                <div><strong>Contoh:</strong> Hari ini 180.241.123.45, besok bisa berubah menjadi 180.241.124.100.</div>
+                            </div>
+                        </div>
+
+                        <div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                            <div class="flex items-center space-x-2 text-violet-600">
+                                <i class="fa-solid fa-anchor text-lg"></i>
+                                <h4 class="font-bold text-lg">IP Static</h4>
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-slate-300">
+                                Alamat IP yang tetap dan tidak pernah berubah, sangat cocok untuk server, website instansi, atau CCTV yang harus selalu ditemukan di alamat yang sama.
+                            </p>
+                            <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded text-xs space-y-1">
+                                <div><strong>Kelebihan/Kekurangan:</strong> Konsisten dan mudah ditemukan, namun berbayar dan rentan serangan karena alamatnya tetap.</div>
+                                <div><strong>Contoh:</strong> Server kementerian.go.id memiliki IP Static khusus.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 3: TOPOLOGI JARINGAN ================= -->
+        <section id="tab-topology" class="space-y-6 hidden">
+            <div class="bg-gradient-to-r from-indigo-950 to-violet-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+                <h2 class="text-2xl sm:text-3xl font-bold mb-2">Topologi Jaringan Komputer Konkret</h2>
+                <p class="text-indigo-200 text-sm sm:text-base max-w-3xl">
+                    Struktur geometris hubungan antar perangkat dalam jaringan telekomunikasi. Jelajahi karakteristik, kelebihan, kekurangan, serta visualisasi kanvas interaktifnya.
+                </p>
+            </div>
+
+            <!-- Topology Selector Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" id="topology-buttons">
+                <!-- Populated via JS -->
+            </div>
+
+            <!-- Detailed Topology Viewer -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Topology Canvas (2 cols) -->
+                <div class="lg:col-span-2 glass-card rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 id="topo-title" class="font-bold text-lg flex items-center space-x-2">
+                            <i class="fa-solid fa-circle-nodes text-indigo-600"></i>
+                            <span id="topo-name">Topologi Star (Bintang)</span>
+                        </h3>
+                        <span id="topo-badge" class="px-2.5 py-1 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded font-semibold text-xs">Paling Umum</span>
+                    </div>
+
+                    <!-- Topology Canvas Wrapper -->
+                    <div class="relative w-full aspect-[4/3] sm:aspect-[16/10] bg-slate-900 rounded-xl overflow-hidden shadow-inner border border-slate-800 flex items-center justify-center">
+                        <canvas id="topologyCanvas" class="w-full h-full cursor-pointer"></canvas>
+                        <div class="absolute bottom-4 left-4 right-4 bg-slate-950/80 backdrop-blur border border-slate-800 text-slate-200 p-3 rounded-xl text-xs sm:text-sm font-medium shadow-lg">
+                            <span id="topo-canvas-desc">Klik simpul/perangkat pada canvas untuk mensimulasikan pengiriman paket data antar node.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topology Specs (1 col) -->
+                <div class="glass-card rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-lg text-indigo-600 dark:text-indigo-400">Analisis Topologi</h3>
+                        <p id="topo-desc" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Penjelasan detail mengenai topologi yang dipilih.
+                        </p>
+                        
+                        <div class="space-y-2">
+                            <h4 class="font-semibold text-xs uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                                <i class="fa-solid fa-check-circle mr-1"></i> Kelebihan:
+                            </h4>
+                            <ul id="topo-pros" class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300 list-disc list-inside">
+                                <!-- Pros list -->
+                            </ul>
+                        </div>
+
+                        <div class="space-y-2">
+                            <h4 class="font-semibold text-xs uppercase tracking-wider text-rose-600 dark:text-rose-400">
+                                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Kekurangan:
+                            </h4>
+                            <ul id="topo-cons" class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300 list-disc list-inside">
+                                <!-- Cons list -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 text-center">
+                        Mata Kuliah Jaringan Komputer
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= SECTION 4: LAB SIMULASI IP (STUDI KASUS) ================= -->
+        <section id="tab-ipsim" class="space-y-6 hidden">
+            <div class="bg-gradient-to-r from-indigo-900 to-violet-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl">
+                <h2 class="text-2xl sm:text-3xl font-bold mb-2">Lab Simulasi IP Address (Studi Kasus)</h2>
+                <p class="text-indigo-200 text-sm sm:text-base max-w-3xl">Baca studi kasus, klik PC pada topologi, lalu konfigurasikan IP address dan subnet mask secara mandiri. Uji koneksi dengan Ping atau Kirim PDU seperti di Cisco Packet Tracer.</p>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+                <button id="ipl-btn-A" onclick="selectIpClass('A')"><span>Studi Kasus Kelas A</span> <i class="ck fa-solid fa-circle-check text-emerald-500 hidden"></i></button>
+                <button id="ipl-btn-B" onclick="selectIpClass('B')"><span>Studi Kasus Kelas B</span> <i class="ck fa-solid fa-circle-check text-emerald-500 hidden"></i></button>
+                <button id="ipl-btn-C" onclick="selectIpClass('C')"><span>Studi Kasus Kelas C</span> <i class="ck fa-solid fa-circle-check text-emerald-500 hidden"></i></button>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                <div id="ipl-story" class="glass-card rounded-2xl p-6 shadow-sm space-y-4 lg:col-span-2"></div>
+                <div class="lg:col-span-3 space-y-4">
+                    <div class="glass-card rounded-2xl p-4 shadow-sm">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wide text-slate-500">Workspace &middot; klik PC untuk konfigurasi</span>
+                            <button onclick="resetIpLab()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold"><i class="fa-solid fa-rotate-left mr-1"></i>Reset</button>
+                        </div>
+                        <div id="ipl-topo" class="rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800"></div>
+                        <div class="flex flex-wrap items-center gap-2 mt-3 text-sm">
+                            <span class="font-semibold">Kirim PDU:</span>
+                            <select id="ipl-src" class="px-2 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"></select>
+                            <i class="fa-solid fa-arrow-right text-slate-400"></i>
+                            <select id="ipl-dst" class="px-2 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"></select>
+                            <button onclick="ipSend(+ipEl('ipl-src').value,+ipEl('ipl-dst').value)" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold"><i class="fa-solid fa-paper-plane mr-1"></i>Kirim</button>
+                            <button onclick="ipCheck()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"><i class="fa-solid fa-clipboard-check mr-1"></i>Cek Konfigurasi</button>
+                        </div>
+                        <div id="ipl-status" class="mt-3 text-sm"></div>
+                    </div>
+                    <div class="glass-card rounded-2xl p-4 shadow-sm overflow-x-auto">
+                        <div class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">PDU List / Event Log</div>
+                        <table class="w-full text-xs text-left"><thead><tr class="text-slate-500"><th class="py-1">#</th><th>Status</th><th>Sumber</th><th>Tujuan</th><th>Tipe</th><th>Keterangan</th></tr></thead><tbody id="ipl-log"></tbody></table>
+                    </div>
+                </div>
+            </div>
+            <div id="ipl-modal" class="hidden fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4" onclick="if(event.target===this)closeIpPc()">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <div class="flex items-center justify-between px-4 py-3 bg-slate-100 dark:bg-slate-800">
+                        <b id="ipl-mtitle"></b>
+                        <button onclick="closeIpPc()" class="px-2 text-slate-500 hover:text-red-500"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="flex text-sm font-semibold border-b border-slate-200 dark:border-slate-700">
+                        <button id="ipl-mt-cfg" onclick="ipModalTab('cfg')" class="flex-1 py-2">IP Configuration</button>
+                        <button id="ipl-mt-cli" onclick="ipModalTab('cli')" class="flex-1 py-2">Command Prompt</button>
+                    </div>
+                    <div id="ipl-mbody" class="p-4"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs sm:text-sm text-slate-500 dark:text-slate-400 space-y-1">
+            <p>Aplikasi Web Interaktif Jaringan Komputer & Simulasi Alur Request Response</p>
+            <p class="font-medium text-slate-700 dark:text-slate-300">Dosen pengampu : Lazuardi yudha Pradana,S.Kom.,M.Kom</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- THEME TOGGLE ---
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                icon.className = "fa-solid fa-sun text-lg text-amber-400";
+            } else {
+                icon.className = "fa-solid fa-moon text-lg";
+            }
+        }
+
+        // --- TAB SWITCHING ---
+        function switchTab(tabId) {
+            ['simulation', 'ipaddress', 'topology', 'ipsim'].forEach(id => {
+                document.getElementById(`tab-${id}`).classList.add('hidden');
+                document.getElementById(`btn-tab-${id}`).className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2 whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800";
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`btn-tab-${tabId}`).className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2 whitespace-nowrap bg-indigo-600 text-white shadow-md shadow-indigo-500/20";
+
+            if (tabId === 'simulation') initSimCanvas();
+            if (tabId === 'topology') initTopologyCanvas(currentTopoIndex);
+            if (tabId === 'ipsim') renderIpLab();
+        }
+
+        // --- IP ADDRESS SUB-TABS ---
+        function switchIpTab(subId) {
+            ['def', 'class', 'pubpriv', 'dynstat'].forEach(id => {
+                document.getElementById(`iptab-${id}`).classList.add('hidden');
+                document.getElementById(`iptab-btn-${id}`).className = "ip-tab-btn p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold text-sm text-left transition flex items-center space-x-2";
+            });
+            document.getElementById(`iptab-${subId}`).classList.remove('hidden');
+            document.getElementById(`iptab-btn-${subId}`).className = "ip-tab-btn p-3 rounded-xl border border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold text-sm text-left transition flex items-center space-x-2";
+        }
+
+
+        // ==========================================
+        // SIMULATION DATA & LOGIC (U-SHAPE ALUR)
+        // ==========================================
+        const simStages = [
+            { id: 1, name: "URL", icon: "fa-link", title: "1. Masukkan URL", desc: "Pengguna mengetikkan URL (contoh: youtube.com) di address bar browser dan menekan Enter." },
+            { id: 2, name: "DNS", icon: "fa-server", title: "2. DNS Resolution", desc: "Domain Name System (DNS) menerjemahkan nama domain 'youtube.com' menjadi alamat IP server tujuan (misal: 142.250.190.46)." },
+            { id: 3, name: "IP address", icon: "fa-map-pin", title: "3. IP Address Routing", desc: "Paket data dibungkus dengan Source IP (IP perangkatmu) dan Destination IP (IP server YouTube) agar router tahu arah tujuan." },
+            { id: 4, name: "Network", icon: "fa-network-wired", title: "4. Jaringan Lokal & Gateway", desc: "Paket data meninggalkan perangkat lokal (LAN/WiFi), melewati switch dan router gerbang menuju internet global." },
+            { id: 5, name: "HTTPS", icon: "fa-lock", title: "5. Keamanan HTTPS / TLS", desc: "Melakukan enkripsi data (Handshake TLS) agar informasi yang dikirimkan aman dari penyadapan di tengah jalan." },
+            { id: 6, name: "Server", icon: "fa-database", title: "6. Server Processing", desc: "Permintaan (Request) tiba di Server pusat YouTube. Server memproses query dan menyiapkan data website." },
+            { id: 7, name: "Response", icon: "fa-paper-plane", title: "7. Server Response", desc: "Server mengirimkan balik paket respons berisi kode HTML, CSS, JavaScript, dan video stream kembali ke perangkatmu." },
+            { id: 8, name: "Browser", icon: "fa-window-maximize", title: "8. Browser Rendering", desc: "Browser menerima byte respons dan mulai merender (parse) struktur halaman web secara visual." },
+            { id: 9, name: "Website", icon: "fa-globe", title: "9. Website Tampil Sempurna", desc: "Halaman YouTube tampil secara utuh di layar perangkatmu, siap untuk dinikmati!" }
+        ];
+
+        let currentSimStep = 0;
+        let isSimulating = false;
+        let simAnimFrame = null;
+        let packetProgress = 0; // 0 to 1 along U-path
+
+        function renderStagesList() {
+            const container = document.getElementById('stages-list');
+            container.innerHTML = simStages.map((s, idx) => `
+                <div onclick="jumpToSimStep(${idx})" class="p-3 rounded-xl border transition cursor-pointer flex items-center space-x-3 ${currentSimStep === idx ? 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-500 text-indigo-700 dark:text-indigo-300 shadow-sm' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}">
+                    <div class="w-8 h-8 rounded-lg ${currentSimStep === idx ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'} flex items-center justify-center font-bold text-xs">
+                        ${s.id}
+                    </div>
+                    <div class="flex-grow">
+                        <div class="font-semibold text-xs sm:text-sm">${s.name}</div>
+                        <div class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">${s.desc}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function initSimCanvas() {
+            const canvas = document.getElementById('simulationCanvas');
+            const ctx = canvas.getContext('2d');
+            resizeCanvas(canvas);
+            drawSimulation(ctx, canvas.width, canvas.height, 0);
+            renderStagesList();
+            updateSimInfo();
+        }
+
+        function resizeCanvas(canvas) {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
+
+        function getUPathCoordinates(progress, width, height) {
+            // U-shape coordinate points for 9 nodes
+            // Left column: URL (top-left) down to HTTPS (bottom-left)
+            // Center bottom: Server
+            // Right column: Response (bottom-right) up to Website (top-right)
+            const marginX = 80;
+            const topY = 60;
+            const bottomY = height - 70;
+            const centerX = width / 2;
+            const leftX = marginX;
+            const rightX = width - marginX;
+
+            const nodes = [
+                { x: leftX, y: topY + 0 * 45 },      // 1. URL
+                { x: leftX, y: topY + 1 * 45 },      // 2. DNS
+                { x: leftX, y: topY + 2 * 45 },      // 3. IP address
+                { x: leftX, y: topY + 3 * 45 },      // 4. Network
+                { x: leftX, y: topY + 4 * 45 },      // 5. HTTPS
+                { x: centerX, y: bottomY },          // 6. Server
+                { x: rightX, y: topY + 4 * 45 },     // 7. Response
+                { x: rightX, y: topY + 2 * 45 },     // 8. Browser
+                { x: rightX, y: topY + 0 * 45 }      // 9. Website
+            ];
+
+            // Interpolate along the 8 segments
+            const totalSegments = nodes.length - 1;
+            const scaledProg = progress * totalSegments;
+            const segIdx = Math.min(Math.floor(scaledProg), totalSegments - 1);
+            const segProg = scaledProg - segIdx;
+
+            const p1 = nodes[segIdx];
+            const p2 = nodes[segIdx + 1];
+
+            return {
+                x: p1.x + (p2.x - p1.x) * segProg,
+                y: p1.y + (p2.y - p1.y) * segProg,
+                nodes: nodes,
+                activeNodeIdx: Math.round(scaledProg)
+            };
+        }
+
+        function drawSimulation(ctx, w, h, progress) {
+            ctx.clearRect(0, 0, w, h);
+            const logicalW = w / window.devicePixelRatio;
+            const logicalH = h / window.devicePixelRatio;
+
+            const pathInfo = getUPathCoordinates(1, logicalW, logicalH);
+            const nodes = pathInfo.nodes;
+
+            // Draw connecting U-curve background line
+            ctx.beginPath();
+            ctx.moveTo(nodes[0].x, nodes[0].y);
+            for (let i = 1; i < nodes.length; i++) {
+                ctx.lineTo(nodes[i].x, nodes[i].y);
+            }
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([4, 4]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw nodes
+            const activeIdx = Math.min(Math.floor(progress * (simStages.length - 1)), simStages.length - 1);
+
+            nodes.forEach((n, idx) => {
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, 22, 0, Math.PI * 2);
+                if (idx <= activeIdx) {
+                    ctx.fillStyle = '#6366f1';
+                    ctx.shadowColor = '#6366f1';
+                    ctx.shadowBlur = 12;
+                } else {
+                    ctx.fillStyle = '#1e293b';
+                    ctx.shadowBlur = 0;
+                }
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = idx <= activeIdx ? '#818cf8' : '#334155';
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+
+                // Node Label
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 11px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(simStages[idx].name, n.x, n.y);
+            });
+
+            // Draw animated moving packet
+            const currentPos = getUPathCoordinates(progress, logicalW, logicalH);
+            ctx.beginPath();
+            ctx.arc(currentPos.x, currentPos.y, 12, 0, Math.PI * 2);
+            ctx.fillStyle = '#38bdf8';
+            ctx.shadowColor = '#38bdf8';
+            ctx.shadowBlur = 15;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+
+            // Packet inner icon dot
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(currentPos.x, currentPos.y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function updateSimInfo() {
+            const stage = simStages[currentSimStep];
+            document.getElementById('step-desc').textContent = stage.desc;
+            document.getElementById('step-badge').textContent = `Tahap ${stage.id}/9: ${stage.name}`;
+            renderStagesList();
+        }
+
+        function startSimulation() {
+            if (isSimulating) return;
+            isSimulating = true;
+            document.getElementById('play-sim-btn').innerHTML = `<i class="fa-solid fa-pause"></i><span>Berjalan...</span>`;
+            
+            let startTime = null;
+            const duration = 8000; // 8 seconds for full U-path
+
+            function animate(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+                packetProgress = Math.min(elapsed / duration, 1);
+                
+                currentSimStep = Math.min(Math.floor(packetProgress * (simStages.length - 1)), simStages.length - 1);
+                updateSimInfo();
+
+                const canvas = document.getElementById('simulationCanvas');
+                const ctx = canvas.getContext('2d');
+                drawSimulation(ctx, canvas.width, canvas.height, packetProgress);
+
+                if (packetProgress < 1 && isSimulating) {
+                    simAnimFrame = requestAnimationFrame(animate);
+                } else {
+                    isSimulating = false;
+                    document.getElementById('play-sim-btn').innerHTML = `<i class="fa-solid fa-play"></i><span>Mulai Alur</span>`;
+                }
+            }
+            simAnimFrame = requestAnimationFrame(animate);
+        }
+
+        function stepSimulation(direction) {
+            isSimulating = false;
+            cancelAnimationFrame(simAnimFrame);
+            currentSimStep = Math.max(0, Math.min(simStages.length - 1, currentSimStep + direction));
+            packetProgress = currentSimStep / (simStages.length - 1);
+            
+            updateSimInfo();
+            const canvas = document.getElementById('simulationCanvas');
+            const ctx = canvas.getContext('2d');
+            drawSimulation(ctx, canvas.width, canvas.height, packetProgress);
+        }
+
+        function jumpToSimStep(index) {
+            isSimulating = false;
+            cancelAnimationFrame(simAnimFrame);
+            currentSimStep = index;
+            packetProgress = currentSimStep / (simStages.length - 1);
+            
+            updateSimInfo();
+            const canvas = document.getElementById('simulationCanvas');
+            const ctx = canvas.getContext('2d');
+            drawSimulation(ctx, canvas.width, canvas.height, packetProgress);
+        }
+
+        function resetSimulation() {
+            isSimulating = false;
+            cancelAnimationFrame(simAnimFrame);
+            currentSimStep = 0;
+            packetProgress = 0;
+            updateSimInfo();
+            const canvas = document.getElementById('simulationCanvas');
+            const ctx = canvas.getContext('2d');
+            drawSimulation(ctx, canvas.width, canvas.height, 0);
+            document.getElementById('play-sim-btn').innerHTML = `<i class="fa-solid fa-play"></i><span>Mulai Alur</span>`;
+        }
+
+
+        // ==========================================
+        // TOPOLOGI JARINGAN DATA & LOGIC
+        // ==========================================
+        const topologies = [
+            {
+                id: 'star',
+                name: 'Topologi Star (Bintang)',
+                badge: 'Paling Populer',
+                desc: 'Semua komputer terhubung ke perangkat pusat berupa Hub atau Switch. Kontrol terpusat pada hub/switch tersebut.',
+                pros: ['Mudah dikelola & ditambah node baru', 'Jika satu kabel putus, node lain tetap aman', 'Deteksi kesalahan mudah'],
+                cons: ['Boros kabel', 'Jika Switch/Hub pusat rusak, seluruh jaringan lumpuh', 'Bergantung pada kapasitas perangkat pusat']
+            },
+            {
+                id: 'bus',
+                name: 'Topologi Bus',
+                badge: 'Tradisional',
+                desc: 'Menggunakan satu kabel utama (backbone/bus) di mana semua komputer terhubung langsung menggunakan konektor T (BNC).',
+                pros: ['Hemat kabel & biaya instalasi', 'Sangat sederhana untuk jaringan skala kecil', 'Mudah dikembangkan linear'],
+                cons: ['Jika kabel utama (backbone) terputus, seluruh jaringan down', 'Sering terjadi tabrakan data (collision)', 'Sulit troubleshooting saat gangguan']
+            },
+            {
+                id: 'ring',
+                name: 'Topologi Ring (Cincin)',
+                badge: 'Sirkular',
+                desc: 'Setiap perangkat terhubung ke dua perangkat lain membentuk lingkaran tertutup. Data mengalir dalam satu arah searah jarum jam.',
+                pros: ['Tidak ada tabrakan data (collision)', 'Aliran data teratur dengan token passing', 'Performa stabil meski beban tinggi'],
+                cons: ['Jika satu titik node rusak, cincin terputus total', 'Penambahan node baru memerlukan pemadaman jaringan sementara', 'Konfigurasi rumit']
+            },
+            {
+                id: 'mesh',
+                name: 'Topologi Mesh (Jala)',
+                badge: 'Keandalan Tinggi',
+                desc: 'Setiap perangkat terhubung langsung ke semua perangkat lain dalam jaringan (Full Mesh) atau sebagian (Partial Mesh).',
+                pros: ['Keandalan dan redundansi sangat tinggi', 'Jalur komunikasi aman dan privasi terjamin', 'Kerusakan satu jalur tidak mengganggu'],
+                cons: ['Sangat boros kabel dan port I/O', 'Biaya instalasi dan pemeliharaan sangat mahal', 'Kompleksitas tinggi']
+            },
+            {
+                id: 'tree',
+                name: 'Topologi Tree (Pohon)',
+                badge: 'Hierarki',
+                desc: 'Gabungan antara topologi Star dan Bus yang disusun secara hierarkis seperti cabang pohon (antar hub/switch bertingkat).',
+                pros: ['Mudah dikelompokkan ke dalam kelompok kerja', 'Manajemen data terstruktur dengan baik', 'Pengembangan jaringan mudah'],
+                cons: ['Bergantung pada hub/switch tingkat atas', 'Instalasi rumit dan membutuhkan banyak kabel', 'Troubleshooting cukup memakan waktu']
+            },
+            {
+                id: 'hybrid',
+                name: 'Topologi Hybrid',
+                badge: 'Kombinasi Modern',
+                desc: 'Gabungan dari dua atau lebih topologi berbeda (misalnya Star-Ring atau Star-Bus) untuk menyesuaikan kebutuhan perusahaan.',
+                pros: ['Sangat fleksibel dan dapat disesuaikan', 'Kinerja dioptimalkan sesuai area kerja', 'Mudah diintegrasikan dengan jaringan lama'],
+                cons: ['Biaya perancangan dan perangkat sangat mahal', 'Pengelolaan dan konfigurasi sangat kompleks', 'Perlu tenaga ahli khusus']
+            }
+        ];
+
+        let currentTopoIndex = 0;
+
+        function renderTopologyButtons() {
+            const container = document.getElementById('topology-buttons');
+            container.innerHTML = topologies.map((t, idx) => `
+                <button onclick="selectTopology(${idx})" class="p-3 rounded-xl border text-left transition flex flex-col justify-between ${currentTopoIndex === idx ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 shadow-sm' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}">
+                    <div class="font-bold text-sm mb-1">${t.name.split(' ')[0]}</div>
+                    <div class="text-[10px] text-slate-500 uppercase tracking-wider">${t.badge}</div>
+                </button>
+            `).join('');
+        }
+
+        function selectTopology(index) {
+            currentTopoIndex = index;
+            renderTopologyButtons();
+            const t = topologies[index];
+            document.getElementById('topo-name').textContent = t.name;
+            document.getElementById('topo-badge').textContent = t.badge;
+            document.getElementById('topo-desc').textContent = t.desc;
+            document.getElementById('topo-pros').innerHTML = t.pros.map(p => `<li>${p}</li>`).join('');
+            document.getElementById('topo-cons').innerHTML = t.cons.map(c => `<li>${c}</li>`).join('');
+
+            const canvas = document.getElementById('topologyCanvas');
+            const ctx = canvas.getContext('2d');
+            drawTopology(ctx, canvas.width, canvas.height, t.id);
+        }
+
+        function initTopologyCanvas(index) {
+            renderTopologyButtons();
+            const canvas = document.getElementById('topologyCanvas');
+            const ctx = canvas.getContext('2d');
+            resizeCanvas(canvas);
+            selectTopology(index);
+        }
+
+        function drawTopology(ctx, w, h, topoId) {
+            ctx.clearRect(0, 0, w, h);
+            const lw = w / window.devicePixelRatio;
+            const lh = h / window.devicePixelRatio;
+            const cx = lw / 2;
+            const cy = lh / 2;
+
+            ctx.strokeStyle = '#6366f1';
+            ctx.fillStyle = '#6366f1';
+            ctx.lineWidth = 2;
+
+            if (topoId === 'star') {
+                // Central Switch
+                drawNode(ctx, cx, cy, 'Switch', '#4f46e5');
+                const nodesCount = 5;
+                for (let i = 0; i < nodesCount; i++) {
+                    const angle = (i * 2 * Math.PI) / nodesCount;
+                    const nx = cx + Math.cos(angle) * 110;
+                    const ny = cy + Math.sin(angle) * 90;
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.lineTo(nx, ny);
+                    ctx.stroke();
+                    drawNode(ctx, nx, ny, `PC ${i+1}`, '#1e293b');
+                }
+            } else if (topoId === 'bus') {
+                // Backbone line
+                ctx.beginPath();
+                ctx.moveTo(60, cy);
+                ctx.lineTo(lw - 60, cy);
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = '#94a3b8';
+                ctx.stroke();
+
+                const nodesCount = 5;
+                for (let i = 0; i < nodesCount; i++) {
+                    const nx = 80 + i * ((lw - 160) / (nodesCount - 1));
+                    const ny = i % 2 === 0 ? cy - 70 : cy + 70;
+                    ctx.beginPath();
+                    ctx.moveTo(nx, cy);
+                    ctx.lineTo(nx, ny);
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#6366f1';
+                    ctx.stroke();
+                    drawNode(ctx, nx, ny, `PC ${i+1}`, '#1e293b');
+                }
+            } else if (topoId === 'ring') {
+                const radius = Math.min(lw, lh) * 0.35;
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                ctx.strokeStyle = '#6366f1';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                const nodesCount = 6;
+                for (let i = 0; i < nodesCount; i++) {
+                    const angle = (i * 2 * Math.PI) / nodesCount;
+                    const nx = cx + Math.cos(angle) * radius;
+                    const ny = cy + Math.sin(angle) * radius;
+                    drawNode(ctx, nx, ny, `Node ${i+1}`, '#1e293b');
+                }
+            } else if (topoId === 'mesh') {
+                const nodesCount = 5;
+                const points = [];
+                const radius = Math.min(lw, lh) * 0.35;
+                for (let i = 0; i < nodesCount; i++) {
+                    const angle = (i * 2 * Math.PI) / nodesCount;
+                    points.push({ x: cx + Math.cos(angle) * radius, y: cy + Math.sin(angle) * radius });
+                }
+                // Connect all to all
+                for (let i = 0; i < points.length; i++) {
+                    for (let j = i + 1; j < points.length; j++) {
+                        ctx.beginPath();
+                        ctx.moveTo(points[i].x, points[i].y);
+                        ctx.lineTo(points[j].x, points[j].y);
+                        ctx.strokeStyle = 'rgba(99, 102, 241, 0.4)';
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+                    }
+                }
+                points.forEach((p, idx) => {
+                    drawNode(ctx, p.x, p.y, `Server ${idx+1}`, '#4f46e5');
+                });
+            } else if (topoId === 'tree') {
+                // Root switch
+                drawNode(ctx, cx, 50, 'Root', '#4f46e5');
+                // Branch switches
+                const bx1 = cx - 120, bx2 = cx + 120;
+                ctx.beginPath(); ctx.moveTo(cx, 50); ctx.lineTo(bx1, 130); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(cx, 50); ctx.lineTo(bx2, 130); ctx.stroke();
+                drawNode(ctx, bx1, 130, 'Switch A', '#1e293b');
+                drawNode(ctx, bx2, 130, 'Switch B', '#1e293b');
+
+                // Leaf nodes
+                [-180, -60].forEach((dx, i) => {
+                    const nx = bx1 + dx / 1.5;
+                    ctx.beginPath(); ctx.moveTo(bx1, 130); ctx.lineTo(nx, 210); ctx.stroke();
+                    drawNode(ctx, nx, 210, `PC ${i+1}`, '#334155');
+                });
+                [60, 180].forEach((dx, i) => {
+                    const nx = bx2 + dx / 1.5;
+                    ctx.beginPath(); ctx.moveTo(bx2, 130); ctx.lineTo(nx, 210); ctx.stroke();
+                    drawNode(ctx, nx, 210, `PC ${i+3}`, '#334155');
+                });
+            } else if (topoId === 'hybrid') {
+                // Hybrid Star + Ring
+                drawNode(ctx, cx - 100, cy, 'Hub A', '#4f46e5');
+                drawNode(ctx, cx + 100, cy, 'Hub B', '#4f46e5');
+                ctx.beginPath(); ctx.moveTo(cx - 100, cy); ctx.lineTo(cx + 100, cy); ctx.stroke();
+
+                // Star around Hub A
+                [-60, 60].forEach((dy, i) => {
+                    ctx.beginPath(); ctx.moveTo(cx - 100, cy); ctx.lineTo(cx - 180, cy + dy); ctx.stroke();
+                    drawNode(ctx, cx - 180, cy + dy, `PC A${i+1}`, '#1e293b');
+                });
+                // Star around Hub B
+                [-60, 60].forEach((dy, i) => {
+                    ctx.beginPath(); ctx.moveTo(cx + 100, cy); ctx.lineTo(cx + 180, cy + dy); ctx.stroke();
+                    drawNode(ctx, cx + 180, cy + dy, `PC B${i+1}`, '#1e293b');
+                });
+            }
+        }
+
+        function drawNode(ctx, x, y, label, color) {
+            ctx.beginPath();
+            ctx.arc(x, y, 24, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label, x, y);
+        }
+
+
+        // Window resize listener
+        window.addEventListener('resize', () => {
+            const simCanvas = document.getElementById('simulationCanvas');
+            if (simCanvas) {
+                resizeCanvas(simCanvas);
+                drawSimulation(simCanvas.getContext('2d'), simCanvas.width, simCanvas.height, packetProgress);
+            }
+            const topoCanvas = document.getElementById('topologyCanvas');
+            if (topoCanvas) {
+                resizeCanvas(topoCanvas);
+                drawTopology(topoCanvas.getContext('2d'), topoCanvas.width, topoCanvas.height, topologies[currentTopoIndex].id);
+            }
+        });
+
+
+        // ==========================================
+        // LAB SIMULASI IP (STUDI KASUS KELAS A/B/C)
+        // ==========================================
+        const IPLAB = {
+            A: { cls: 'A', mask: '255.0.0.0', pcs: ['PC-DB', 'PC-APP', 'PC-BACKUP'],
+                title: 'Ruang Server PT Sumatera Data Prima',
+                story: 'PT Sumatera Data Prima di Kota Jambi membangun ruang server mini untuk layanan toko online regional. Tiga PC dihubungkan ke satu switch: <b>PC-DB</b> (server database pesanan), <b>PC-APP</b> (server aplikasi toko online), dan <b>PC-BACKUP</b> (server cadangan harian). Karena manajemen menargetkan pertumbuhan hingga jutaan perangkat IoT gudang, direksi menetapkan seluruh perangkat <b>wajib memakai segmen IP kelas A</b>. Sebagai network engineer, berikan IP address dan subnet mask pada ketiga PC agar PC-APP dapat mengirim data pesanan ke PC-DB dan PC-BACKUP.' },
+            B: { cls: 'B', mask: '255.255.0.0', pcs: ['PC-DOSEN', 'PC-LAB', 'PC-ADMIN'],
+                title: 'Jaringan Laboratorium Fakultas',
+                story: 'Fakultas Sains dan Teknologi menata jaringan laboratorium komputer yang akan melayani ribuan perangkat (ruang dosen, laboratorium, dan WiFi kampus). Tim TI menempatkan tiga PC pada satu switch: <b>PC-DOSEN</b> (komputer pengajar), <b>PC-LAB</b> (komputer praktikum mahasiswa), dan <b>PC-ADMIN</b> (komputer tata usaha). Kepala TI memutuskan jaringan ini <b>wajib memakai segmen IP kelas B</b>. Konfigurasikan ketiga PC agar PC-DOSEN dapat mengirim berkas soal ujian ke PC-LAB dan PC-ADMIN.' },
+            C: { cls: 'C', mask: '255.255.255.0', pcs: ['PC-KASIR', 'PC-DESAIN', 'PC-PRINT'],
+                title: 'Toko Percetakan Jambi Print Express',
+                story: 'Toko percetakan Jambi Print Express hanya memiliki beberapa perangkat dalam satu ruangan, sehingga pemilik memilih <b>segmen IP kelas C</b> yang paling sesuai untuk jaringan kecil. Tiga PC terhubung ke satu switch: <b>PC-KASIR</b> (transaksi pelanggan), <b>PC-DESAIN</b> (pembuat desain cetak), dan <b>PC-PRINT</b> (terhubung ke mesin cetak). Konfigurasikan IP address dan subnet mask agar PC-DESAIN dapat mengirim file cetak ke PC-PRINT dan PC-KASIR.' }
+        };
+        const IPPOS = [{ x: 100, y: 95 }, { x: 300, y: 55 }, { x: 500, y: 95 }], IPSW = { x: 300, y: 225 };
+        let ipCur = 'A', ipBusy = false, ipPc = 0, ipTab = 'cfg', ipState = {}, ipLog = {}, ipCli = {}, ipDone = {};
+        function ipInitState() { ['A', 'B', 'C'].forEach(k => { ipState[k] = IPLAB[k].pcs.map(() => ({ ip: '', mask: '' })); ipLog[k] = []; ipCli[k] = IPLAB[k].pcs.map(() => []); }); }
+        ipInitState();
+        const ipEl = id => document.getElementById(id);
+        const ipEsc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+        const ipSleep = ms => new Promise(r => setTimeout(r, ms));
+        function ipParse(s) { const m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec((s || '').trim()); if (!m) return null; const o = m.slice(1).map(Number); return o.some(x => x > 255) ? null : o; }
+        const ipInt = o => ((o[0] << 24) | (o[1] << 16) | (o[2] << 8) | o[3]) >>> 0;
+        const ipStr = n => [n >>> 24, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join('.');
+        function ipClassOf(o) { if (o[0] === 0 || o[0] === 127) return '-'; return o[0] < 128 ? 'A' : o[0] < 192 ? 'B' : o[0] < 224 ? 'C' : o[0] < 240 ? 'D' : 'E'; }
+        function pcProblem(k, i) {
+            const s = ipState[k][i], L = IPLAB[k];
+            if (!s.ip || !s.mask) return 'IP address / subnet mask belum diisi.';
+            const o = ipParse(s.ip), m = ipParse(s.mask);
+            if (!o) return 'Format IP address tidak valid (harus 4 oktet angka 0-255).';
+            if (!m) return 'Format subnet mask tidak valid.';
+            if (o[0] === 0 || o[0] === 127) return 'Rentang oktet pertama 0 dan 127 dicadangkan (default route / loopback), tidak dapat dipakai antar-PC.';
+            const c = ipClassOf(o);
+            if (c !== L.cls) return `IP tersebut termasuk kelas ${c}, sedangkan studi kasus ini mewajibkan kelas ${L.cls}.`;
+            if (s.mask.trim() !== L.mask && ipParse(s.mask).join('.') !== L.mask) return `Subnet mask tidak sesuai dengan subnet mask default kelas ${L.cls}.`;
+            const mi = ipInt(m), host = (ipInt(o) & ~mi) >>> 0;
+            if (host === 0) return 'Host ID bernilai 0 semua: itu adalah Network Address, tidak boleh dipakai PC.';
+            if (host === (~mi >>> 0)) return 'Host ID bernilai 1 semua: itu adalah Broadcast Address, tidak boleh dipakai PC.';
+            return '';
+        }
+        function ipNet(k, i) { const s = ipState[k][i]; return (ipInt(ipParse(s.ip)) & ipInt(ipParse(s.mask))) >>> 0; }
+        function diagnose(k, a, b) {
+            const n = IPLAB[k].pcs, S = ipState[k], pa = pcProblem(k, a), pb = pcProblem(k, b);
+            if (pa) return { ok: false, type: 'src', msg: `${n[a]}: ${pa}` };
+            if (pb) return { ok: false, type: 'dst', msg: `${n[b]}: ${pb}` };
+            if (ipParse(S[a].ip).join('.') === ipParse(S[b].ip).join('.')) return { ok: false, type: 'dup', msg: 'IP address bentrok: dua PC memakai IP yang sama.' };
+            const na = ipNet(k, a), nb = ipNet(k, b);
+            if (na !== nb) return { ok: false, type: 'net', msg: `Network ID berbeda (${ipStr(na)} dan ${ipStr(nb)}), PC berada di jaringan berbeda dan tidak ada router.` };
+            return { ok: true, type: 'ok', msg: 'Data berhasil dikirim dan dibalas.' };
+        }
+        function selectIpClass(k) { if (ipBusy) return; ipCur = k; closeIpPc(); renderIpLab(); }
+        function resetIpLab() { if (ipBusy) return; const k = ipCur; ipState[k] = IPLAB[k].pcs.map(() => ({ ip: '', mask: '' })); ipLog[k] = []; ipCli[k] = IPLAB[k].pcs.map(() => []); ipDone[k] = false; closeIpPc(); renderIpLab(); }
+        function ipTopoSvg() {
+            const k = ipCur, L = IPLAB[k], S = ipState[k];
+            const dark = 'fill-slate-700 dark:fill-slate-200';
+            let s = '<svg id="ip-svg" viewBox="0 0 600 320" class="w-full h-auto">';
+            IPPOS.forEach((p, i) => {
+                const sx = IPSW.x + (i - 1) * 50;
+                s += `<line x1="${p.x}" y1="${p.y + 32}" x2="${sx}" y2="${IPSW.y}" class="stroke-slate-400 dark:stroke-slate-500" stroke-width="3"/><circle cx="${p.x}" cy="${p.y + 32}" r="5" fill="#22c55e"/><circle cx="${sx}" cy="${IPSW.y}" r="5" fill="#22c55e"/>`;
+            });
+            s += `<rect x="215" y="${IPSW.y}" width="170" height="40" rx="8" class="fill-indigo-600"/>`;
+            for (let j = 0; j < 8; j++) s += `<rect x="${228 + j * 19}" y="${IPSW.y + 22}" width="12" height="10" rx="2" fill="#c7d2fe"/>`;
+            s += `<text x="300" y="${IPSW.y + 15}" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Switch</text>`;
+            IPPOS.forEach((p, i) => {
+                const ip = S[i].ip ? ipEsc(S[i].ip) : 'belum diatur';
+                s += `<g class="cursor-pointer" onclick="openIpPc(${i})"><rect x="${p.x - 34}" y="${p.y - 30}" width="68" height="48" rx="6" class="fill-slate-700 dark:fill-slate-300"/><rect x="${p.x - 29}" y="${p.y - 25}" width="58" height="35" rx="3" class="fill-sky-300 dark:fill-sky-600"/><rect x="${p.x - 12}" y="${p.y + 18}" width="24" height="8" class="fill-slate-500"/>
+                <text x="${p.x}" y="${p.y + 46}" text-anchor="middle" font-size="12" font-weight="700" class="${dark}">${L.pcs[i]}</text>
+                <text x="${p.x}" y="${p.y + 61}" text-anchor="middle" font-size="10" class="fill-slate-500 dark:fill-slate-400">${ip}</text></g>`;
+            });
+            s += '<text id="ip-pkt" x="0" y="0" font-size="22" text-anchor="middle" visibility="hidden">&#9993;&#65039;</text><text id="ip-mark" x="0" y="0" font-size="28" text-anchor="middle" visibility="hidden"></text></svg>';
+            return s;
+        }
+        function renderIpLab() {
+            const k = ipCur, L = IPLAB[k];
+            ['A', 'B', 'C'].forEach(c => {
+                const b = ipEl('ipl-btn-' + c);
+                b.className = 'p-3 rounded-xl border font-semibold text-sm text-left transition flex items-center justify-between ' + (c === k ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300');
+                b.querySelector('.ck').classList.toggle('hidden', !ipDone[c]);
+            });
+            ipEl('ipl-story').innerHTML = `<div class="text-xs font-bold uppercase tracking-wide text-indigo-600 dark:text-indigo-400">Studi Kasus Kelas ${k}</div>
+                <h3 class="text-lg font-bold">${L.title}</h3>
+                <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-300">${L.story}</p>
+                <div class="p-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900 text-sm space-y-1.5">
+                    <div class="font-bold text-indigo-700 dark:text-indigo-300"><i class="fa-solid fa-list-check mr-1"></i>Tugas Kamu</div>
+                    <ol class="list-decimal list-inside space-y-1 text-slate-600 dark:text-slate-300">
+                        <li>Klik tiap PC &rarr; tab <i>IP Configuration</i>, isi IP address dan subnet mask.</li>
+                        <li>Pastikan ketiga PC berada dalam satu jaringan dan memiliki IP yang unik.</li>
+                        <li>Uji dengan <i>Kirim PDU</i> atau perintah <code>ping</code> di <i>Command Prompt</i>.</li>
+                        <li>Klik <i>Cek Konfigurasi</i> untuk penilaian akhir.</li>
+                    </ol>
+                </div>`;
+            ipEl('ipl-topo').innerHTML = ipTopoSvg();
+            const opts = L.pcs.map((n, i) => `<option value="${i}">${n}</option>`).join('');
+            const sv = ipEl('ipl-src').value, dv = ipEl('ipl-dst').value;
+            ipEl('ipl-src').innerHTML = opts; ipEl('ipl-dst').innerHTML = opts;
+            ipEl('ipl-src').value = sv || 0; ipEl('ipl-dst').value = dv || 1;
+            if (ipEl('ipl-src').value === ipEl('ipl-dst').value) ipEl('ipl-dst').value = ipEl('ipl-src').value === '0' ? 1 : 0;
+            ipEl('ipl-status').innerHTML = '';
+            renderIpLog();
+        }
+        function renderIpLog() {
+            const rows = ipLog[ipCur];
+            ipEl('ipl-log').innerHTML = rows.length ? rows.map((r, i) => `<tr class="border-t border-slate-200 dark:border-slate-800 align-top"><td class="py-1.5">${i + 1}</td><td class="font-bold ${r.ok ? 'text-emerald-600' : 'text-red-500'}">${r.ok ? 'Successful' : 'Failed'}</td><td>${r.src}</td><td>${r.dst}</td><td>ICMP</td><td class="text-slate-500 dark:text-slate-400">${ipEsc(r.msg)}</td></tr>`).join('') : '<tr><td colspan="6" class="py-2 text-slate-400">Belum ada paket yang dikirim.</td></tr>';
+        }
+        function ipMove(p, q, ms) {
+            return new Promise(r => {
+                const pk = ipEl('ip-pkt'), t0 = performance.now();
+                pk.setAttribute('visibility', 'visible');
+                (function f(t) { const u = Math.min(1, (t - t0) / ms); pk.setAttribute('x', p.x + (q.x - p.x) * u); pk.setAttribute('y', p.y + (q.y - p.y) * u); u < 1 ? requestAnimationFrame(f) : r(); })(t0);
+            });
+        }
+        async function ipAnim(a, b, d) {
+            const A = { x: IPPOS[a].x, y: IPPOS[a].y + 10 }, B = { x: IPPOS[b].x, y: IPPOS[b].y + 10 }, W = { x: IPSW.x, y: IPSW.y + 8 };
+            const mark = ipEl('ip-mark'), show = (pt, ok) => { mark.setAttribute('x', pt.x); mark.setAttribute('y', pt.y - 12); mark.setAttribute('fill', ok ? '#16a34a' : '#ef4444'); mark.textContent = ok ? '\u2714' : '\u2716'; mark.setAttribute('visibility', 'visible'); };
+            if (!d.ok && d.type === 'src') { show(A, false); await ipSleep(900); return; }
+            await ipMove(A, W, 700);
+            if (!d.ok) { ipEl('ip-pkt').setAttribute('visibility', 'hidden'); show(W, false); await ipSleep(900); return; }
+            await ipMove(W, B, 700); await ipMove(B, W, 500); await ipMove(W, A, 700);
+            ipEl('ip-pkt').setAttribute('visibility', 'hidden'); show(A, true); await ipSleep(700);
+        }
+        async function ipSend(a, b, quiet) {
+            if (ipBusy) return;
+            const k = ipCur, n = IPLAB[k].pcs;
+            if (a === b) { ipEl('ipl-status').innerHTML = '<span class="text-amber-600">Pilih PC sumber dan tujuan yang berbeda.</span>'; return; }
+            ipBusy = true;
+            const d = diagnose(k, a, b);
+            await ipAnim(a, b, d);
+            ipLog[k].push({ ok: d.ok, src: n[a], dst: n[b], msg: d.msg });
+            if (ipCur === k) { renderIpLog(); ipEl('ipl-topo').innerHTML = ipTopoSvg(); ipEl('ipl-status').innerHTML = `<div class="p-3 rounded-lg ${d.ok ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300' : 'bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-300'}"><b>${d.ok ? 'Successful' : 'Failed'}</b> &mdash; ${n[a]} &rarr; ${n[b]}: ${ipEsc(d.msg)}</div>`; }
+            ipBusy = false; return d;
+        }
+        function ipCheck() {
+            const k = ipCur, n = IPLAB[k].pcs; let ok = true, h = '';
+            const row = (g, t, m) => `<div class="flex gap-2 py-1 border-t border-slate-200 dark:border-slate-800"><span class="${g ? 'text-emerald-600' : 'text-red-500'} font-bold">${g ? '\u2714' : '\u2716'}</span><div><b>${t}</b><div class="text-xs text-slate-500 dark:text-slate-400">${ipEsc(m)}</div></div></div>`;
+            n.forEach((nm, i) => { const p = pcProblem(k, i); if (p) ok = false; h += row(!p, nm, p || 'Konfigurasi IP valid.'); });
+            [[0, 1], [0, 2], [1, 2]].forEach(([a, b]) => { const d = diagnose(k, a, b); if (!d.ok) ok = false; h += row(d.ok, `${n[a]} \u21C4 ${n[b]}`, d.ok ? 'Data berhasil terkirim.' : (d.type === 'src' || d.type === 'dst' ? 'Gagal: konfigurasi salah satu PC belum benar.' : d.msg)); });
+            if (ok) ipDone[k] = true;
+            ipEl('ipl-status').innerHTML = `<div class="p-3 rounded-lg ${ok ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300' : 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300'} font-semibold mb-2">${ok ? 'Konfigurasi benar! Ketiga PC dapat saling bertukar data.' : 'Konfigurasi belum sesuai. PC belum dapat bertukar data dengan benar.'}</div>${h}`;
+            renderIpLab2();
+        }
+        function renderIpLab2() { ['A', 'B', 'C'].forEach(c => ipEl('ipl-btn-' + c).querySelector('.ck').classList.toggle('hidden', !ipDone[c])); }
+        // --- Modal PC (IP Configuration & Command Prompt) ---
+        function openIpPc(i) { if (ipBusy) return; ipPc = i; ipEl('ipl-modal').classList.remove('hidden'); ipEl('ipl-mtitle').textContent = IPLAB[ipCur].pcs[i]; ipModalTab(ipTab); }
+        function closeIpPc() { ipEl('ipl-modal').classList.add('hidden'); }
+        function ipModalTab(t) {
+            ipTab = t; const k = ipCur, S = ipState[k][ipPc], on = 'flex-1 py-2 text-indigo-600 border-b-2 border-indigo-600', off = 'flex-1 py-2 text-slate-500';
+            ipEl('ipl-mt-cfg').className = t === 'cfg' ? on : off; ipEl('ipl-mt-cli').className = t === 'cli' ? on : off;
+            const inp = 'w-full mt-1 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono text-sm';
+            if (t === 'cfg') {
+                ipEl('ipl-mbody').innerHTML = `<div class="space-y-3 text-sm"><label class="block font-semibold">IP Address<input id="ipl-in-ip" class="${inp}" value="${ipEsc(S.ip)}" autocomplete="off"></label><label class="block font-semibold">Subnet Mask<input id="ipl-in-mask" class="${inp}" value="${ipEsc(S.mask)}" autocomplete="off"></label><button onclick="ipSaveCfg()" class="w-full py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold">Terapkan</button><div id="ipl-saved" class="text-xs text-emerald-600 h-4"></div></div>`;
+            } else {
+                ipEl('ipl-mbody').innerHTML = `<div id="ipl-cli-out" class="h-56 overflow-y-auto bg-black text-green-400 font-mono text-xs p-3 rounded-lg whitespace-pre-wrap"></div><div class="flex items-center gap-2 mt-2 font-mono text-sm"><span>C:\\&gt;</span><input id="ipl-cli-in" class="flex-1 px-2 py-1.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800" autocomplete="off" onkeydown="if(event.key==='Enter')ipRunCmd(this)"></div>`;
+                ipCliPrint(); ipEl('ipl-cli-in').focus();
+            }
+        }
+        function ipSaveCfg() {
+            const S = ipState[ipCur][ipPc]; S.ip = ipEl('ipl-in-ip').value.trim(); S.mask = ipEl('ipl-in-mask').value.trim();
+            ipEl('ipl-topo').innerHTML = ipTopoSvg(); ipEl('ipl-saved').textContent = 'Konfigurasi diterapkan.';
+        }
+        function ipCliPrint() { const o = ipEl('ipl-cli-out'); if (!o) return; o.textContent = ipCli[ipCur][ipPc].join('\n') || 'Simulator Command Prompt. Ketik "help" untuk daftar perintah.'; o.scrollTop = o.scrollHeight; }
+        function ipCliAdd(l) { ipCli[ipCur][ipPc].push(l); ipCliPrint(); }
+        async function ipRunCmd(inp) {
+            const k = ipCur, i = ipPc, cmd = inp.value.trim(), S = ipState[k][i]; inp.value = '';
+            if (!cmd) return; ipCliAdd('C:\\>' + cmd);
+            const [c, arg] = cmd.split(/\s+/);
+            if (c === 'help') ipCliAdd('Perintah: ipconfig, ping <ip>, cls');
+            else if (c === 'cls') { ipCli[k][i] = []; ipCliPrint(); }
+            else if (c === 'ipconfig') ipCliAdd(`\nIP Address......: ${S.ip || '0.0.0.0'}\nSubnet Mask.....: ${S.mask || '0.0.0.0'}\n`);
+            else if (c === 'ping') {
+                if (!arg) { ipCliAdd('Usage: ping <ip address>'); return; }
+                if (ipBusy) { ipCliAdd('Simulator sedang sibuk, coba lagi.'); return; }
+                const t = ipParse(arg);
+                if (!t) { ipCliAdd('Ping request could not find host ' + ipEsc(arg) + '. Please check the name and try again.'); return; }
+                const tip = t.join('.'); let b = -1;
+                IPLAB[k].pcs.forEach((_, j) => { if (j !== i && ipParse(ipState[k][j].ip) && ipParse(ipState[k][j].ip).join('.') === tip) b = j; });
+                ipCliAdd(`\nPinging ${tip} with 32 bytes of data:\n`);
+                let d, ok = false;
+                if (b < 0) d = { ok: false, type: 'src', msg: pcProblem(k, i) ? `${IPLAB[k].pcs[i]}: ${pcProblem(k, i)}` : 'Tidak ada PC dengan IP tujuan tersebut.' };
+                else { d = await (async () => diagnose(k, i, b))(); }
+                ok = d.ok;
+                if (b >= 0) ipSend(i, b); // animasi + log hanya jika IP tujuan ada
+                for (let n = 0; n < 4; n++) { await ipSleep(450); ipCliAdd(ok ? `Reply from ${tip}: bytes=32 time<1ms TTL=128` : (d.type === 'net' ? `Reply from ${S.ip}: Destination host unreachable.` : 'Request timed out.')); }
+                ipCliAdd(`\nPing statistics for ${tip}:\n    Packets: Sent = 4, Received = ${ok ? 4 : 0}, Lost = ${ok ? 0 : 4} (${ok ? 0 : 100}% loss)` + (ok ? '' : `\n[Simulator] Penyebab: ${d.msg}`) + '\n');
+            } else ipCliAdd(`'${ipEsc(c)}' is not recognized. Ketik "help".`);
+        }
+
+        // Initial load on window load
+        window.onload = function () {
+            initSimCanvas();
+        }
+    </script>
+</body>
+</html>
